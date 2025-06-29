@@ -70,7 +70,7 @@ export class HistoryComponent extends LitElement {
   async onChatClicked(sessionId: string) {
     try {
       this.isLoading = true;
-      const response = await fetch(`${this.getApiUrl()}/api/chats/${sessionId}/?userId=${this.userId}`);
+      const response = await fetch(`${this.getApiUrl()}/api/fodmap/chat/${sessionId}/?userId=${this.userId}`);
       const messages = await response.json();
       const loadSessionEvent = new CustomEvent('loadSession', {
         detail: { id: sessionId, messages },
@@ -92,7 +92,7 @@ export class HistoryComponent extends LitElement {
     try {
       this.chats = this.chats.filter((chat) => chat.id !== sessionId);
 
-      await fetch(`${this.getApiUrl()}/api/chats/${sessionId}?userId=${this.userId}`, {
+      await fetch(`${this.getApiUrl()}/api/fodmap/chat/${sessionId}?userId=${this.userId}`, {
         method: 'DELETE',
       });
     } catch (error) {
@@ -144,7 +144,7 @@ export class HistoryComponent extends LitElement {
     this.isLoading = true;
     this.hasError = false;
     try {
-      const response = await fetch(`${this.getApiUrl()}/api/chats?userId=${this.userId}`);
+      const response = await fetch(`${this.getApiUrl()}/api/fodmap/chat?userId=${this.userId}`);
       const chats = await response.json();
       this.chats = chats;
       this.isLoading = false;

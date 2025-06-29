@@ -39,22 +39,22 @@ export const chatDefaultOptions: ChatComponentOptions = {
   apiUrl: '',
   enablePromptSuggestions: true,
   promptSuggestions: [
-    'How to search and book rentals?',
-    'What is the refund policy?',
-    'How to contact a representative?',
+    'Is banana low FODMAP?',
+    'What snacks can I buy at the grocery store?',
+    'Can I eat bread on the low FODMAP diet?',
   ],
   messages: [],
   strings: {
-    promptSuggestionsTitle: 'Ask anything or try an example',
-    citationsTitle: 'Citations:',
-    followUpQuestionsTitle: 'Follow-up questions:',
-    chatInputPlaceholder: 'Ask me anything...',
-    chatInputButtonLabel: 'Send question',
-    assistant: 'Support Assistant',
+    promptSuggestionsTitle: 'Ask about FODMAP foods or try an example',
+    citationsTitle: 'Food Information:',
+    followUpQuestionsTitle: 'You might also ask:',
+    chatInputPlaceholder: 'Ask about any food while grocery shopping...',
+    chatInputButtonLabel: 'Check food',
+    assistant: 'FODMAP Helper',
     user: 'You',
-    errorMessage: 'We are currently experiencing an issue.',
-    newChatButton: 'New chat',
-    retryButton: 'Retry',
+    errorMessage: 'Sorry, I cannot check that food right now.',
+    newChatButton: 'New food search',
+    retryButton: 'Try again',
   },
 };
 
@@ -144,6 +144,7 @@ export class ChatComponent extends LitElement {
         content: '',
         role: 'assistant',
       };
+      message.content = '';
       for await (const chunk of chunks) {
         if (chunk.delta.content) {
           this.isStreaming = true;
@@ -156,6 +157,8 @@ export class ChatComponent extends LitElement {
           this.sessionId = sessionId;
         }
       }
+
+      console.log('Final message:', this.messages);
 
       this.isLoading = false;
       this.isStreaming = false;

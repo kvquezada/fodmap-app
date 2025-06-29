@@ -13,6 +13,7 @@ export function parseMessageIntoHtml(
   message: AIChatMessage,
   renderCitationReference: (citation: string, index: number) => HTMLTemplateResult,
 ): ParsedMessage {
+  console.log('parseMessageIntoHtml message.content:', message.content);
   if (message.role === 'user') {
     return {
       html: html`${message.content}`,

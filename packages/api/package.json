@@ -1,6 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
+  "type": "module",
   "description": "Azure Functions API for the serverless AI Chat RAG sample",
   "main": "dist/src/functions/*.js",
   "scripts": {
@@ -9,7 +10,8 @@
     "clean": "rimraf dist",
     "prestart": "npm run clean && npm run build",
     "start:host": "func start",
-    "start": "concurrently npm:start:host npm:watch --raw --kill-others"
+    "start:local": "node local-server.js",
+    "start": "concurrently npm:start:local npm:watch --raw --kill-others"
   },
   "author": "Microsoft",
   "license": "MIT",
@@ -25,7 +27,9 @@
     "@langchain/openai": "^0.5.10",
     "@langchain/textsplitters": "^0.1.0",
     "@microsoft/ai-chat-protocol": "^1.0.0-beta.20240814.1",
-    "dotenv": "^16.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
     "faiss-node": "^0.5.1",
     "langchain": "^0.3.6",
     "pdf-parse": "^1.1.1",
