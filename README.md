@@ -68,7 +68,3 @@ The message will be sent to the backend API, which will process it through the A
 - Can I use almond milk?
 - What should I avoid in the produce section?
 - Are there any low FODMAP fruits I can try?
-
-## Data Attribution
-
-All FODMAP ratings compiled from publicly available nutrition sources; text © you.
