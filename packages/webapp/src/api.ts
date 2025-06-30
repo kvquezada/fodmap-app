@@ -33,22 +33,20 @@ export async function* getCompletion(options: ChatRequestOptions) {
 export interface FodmapFood {
   id: string;
   name: string;
-  fodmap: 'low' | 'high';
-  category: string;
-  qty?: string;
+  rating: 'low' | 'moderate' | 'high';
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 export interface FodmapRating {
   food: FodmapFood;
-  rating: 'low' | 'high';
+  rating: 'low' | 'moderate' | 'high';
   safeForLowFodmap: boolean;
-  components: {
-    oligosaccharides: 'low' | 'medium' | 'high';
-    disaccharides: 'low' | 'medium' | 'high';
-    monosaccharides: 'low' | 'medium' | 'high';
-    polyols: 'low' | 'medium' | 'high';
-  };
   recommendation: string;
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 export async function searchFodmapFoods(
@@ -59,7 +57,7 @@ export async function searchFodmapFoods(
   return response.json();
 }
 
-export async function getFodmapCategories(): Promise<{ categories: string[] }> {
+export async function getFodmapFoods(): Promise<{ results: Array<{ food: FodmapFood; rating: FodmapRating }> }> {
   const apiUrl = apiBaseUrl;
   const response = await fetch(`${apiUrl}/api/fodmap/search`);
   return response.json();

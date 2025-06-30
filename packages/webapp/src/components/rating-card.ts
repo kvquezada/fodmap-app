@@ -4,22 +4,20 @@ import { customElement, property } from 'lit/decorators.js';
 export interface FodmapFood {
   id: string;
   name: string;
-  fodmap: 'low' | 'high';
-  category: string;
-  qty?: string;
+  rating: 'low' | 'moderate' | 'high';
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 export interface FodmapRating {
   food: FodmapFood;
-  rating: 'low' | 'high';
+  rating: 'low' | 'moderate' | 'high';
   safeForLowFodmap: boolean;
-  components: {
-    oligosaccharides: 'low' | 'medium' | 'high';
-    disaccharides: 'low' | 'medium' | 'high';
-    monosaccharides: 'low' | 'medium' | 'high';
-    polyols: 'low' | 'medium' | 'high';
-  };
   recommendation: string;
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 /**
@@ -32,7 +30,7 @@ export class RatingCardComponent extends LitElement {
   @property({ type: Object }) rating!: FodmapRating;
   @property({ type: Boolean }) compact = false;
 
-  static styles = css`
+  static override styles = css`
     :host {
       display: block;
       margin: 16px 0;
@@ -57,6 +55,11 @@ export class RatingCardComponent extends LitElement {
     .rating-card.low-fodmap {
       border-color: #22c55e;
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    .rating-card.moderate-fodmap {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     }
 
     .rating-card.high-fodmap {
@@ -94,6 +97,11 @@ export class RatingCardComponent extends LitElement {
       color: white;
     }
 
+    .rating-badge.moderate {
+      background: #f59e0b;
+      color: white;
+    }
+
     .rating-badge.high {
       background: #ef4444;
       color: white;
@@ -101,12 +109,6 @@ export class RatingCardComponent extends LitElement {
 
     .rating-icon {
       font-size: 1.2em;
-    }
-
-    .food-category {
-      color: #6b7280;
-      font-size: 0.875rem;
-      margin-bottom: 8px;
     }
 
     .serving-size {
@@ -128,47 +130,37 @@ export class RatingCardComponent extends LitElement {
       margin-bottom: 12px;
     }
 
-    .components {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 12px;
+    .tips {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      border-left: 4px solid #3b82f6;
     }
 
-    .component {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 8px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 6px;
-      font-size: 0.8rem;
+    .alternatives {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      border-left: 4px solid #10b981;
     }
 
-    .component-level {
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
+    .alternatives-list {
+      margin: 8px 0 0 0;
+      padding-left: 16px;
     }
 
-    .component-level.low {
-      background: #dcfce7;
-      color: #166534;
+    .alternatives-list li {
+      margin-bottom: 4px;
     }
 
-    .component-level.medium {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .component-level.high {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .compact .components {
+    .compact .tips,
+    .compact .alternatives {
       display: none;
     }
 
@@ -177,10 +169,6 @@ export class RatingCardComponent extends LitElement {
     }
 
     @media (max-width: 768px) {
-      .components {
-        grid-template-columns: 1fr;
-      }
-
       .food-header {
         flex-direction: column;
         align-items: flex-start;
@@ -189,13 +177,14 @@ export class RatingCardComponent extends LitElement {
     }
   `;
 
-  render() {
+  override render() {
     const { rating } = this;
     if (!rating) return html``;
 
-    const cardClass = rating.safeForLowFodmap ? 'low-fodmap' : 'high-fodmap';
+    const cardClass =
+      rating.rating === 'low' ? 'low-fodmap' : rating.rating === 'moderate' ? 'moderate-fodmap' : 'high-fodmap';
     const ratingClass = rating.rating;
-    const ratingIcon = rating.safeForLowFodmap ? '✅' : '⚠️';
+    const ratingIcon = rating.safeForLowFodmap ? '✅' : rating.rating === 'moderate' ? '⚠️' : '❌';
 
     return html`
       <div class="rating-card ${cardClass} ${this.compact ? 'compact' : ''}">
@@ -207,39 +196,24 @@ export class RatingCardComponent extends LitElement {
           </div>
         </div>
 
-        <div class="food-category">${rating.food.category}</div>
-
-        ${rating.food.qty ? html` <div class="serving-size">Safe serving: ${rating.food.qty}</div> ` : ''}
+        <div class="serving-size">Safe serving: ${rating.food.safeServing}</div>
 
         <div class="recommendation">${rating.recommendation}</div>
 
         ${this.compact
           ? ''
           : html`
-              <div class="components">
-                <div class="component">
-                  <span>Oligosaccharides</span>
-                  <span class="component-level ${rating.components.oligosaccharides}">
-                    ${rating.components.oligosaccharides}
-                  </span>
-                </div>
-                <div class="component">
-                  <span>Disaccharides</span>
-                  <span class="component-level ${rating.components.disaccharides}">
-                    ${rating.components.disaccharides}
-                  </span>
-                </div>
-                <div class="component">
-                  <span>Monosaccharides</span>
-                  <span class="component-level ${rating.components.monosaccharides}">
-                    ${rating.components.monosaccharides}
-                  </span>
-                </div>
-                <div class="component">
-                  <span>Polyols</span>
-                  <span class="component-level ${rating.components.polyols}"> ${rating.components.polyols} </span>
-                </div>
-              </div>
+              <div class="tips"><strong>💡 Tips:</strong> ${rating.food.tips}</div>
+              ${rating.food.alternatives.length > 0
+                ? html`
+                    <div class="alternatives">
+                      <strong>🔄 Alternatives:</strong>
+                      <ul class="alternatives-list">
+                        ${rating.food.alternatives.map((alt) => html`<li>${alt}</li>`)}
+                      </ul>
+                    </div>
+                  `
+                : ''}
             `}
       </div>
     `;

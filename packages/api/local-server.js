@@ -2,19 +2,19 @@
 
 // Local development server for FODMAP API (bypasses Azure Functions Node.js version check)
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { AzureChatOpenAI } from '@langchain/openai';
 import { fodmapService } from './dist/src/fodmap-service.js';
-import { getAzureOpenAiTokenProvider, getCredentials } from './dist/src/security.js';
+import { getAzureOpenAiTokenProvider } from './dist/src/security.js';
 
 // Load environment variables
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 7071;
@@ -100,38 +100,38 @@ const corsHeaders = {
     'Content-Type,Authorization,x-ms-useragent,x-ms-client-request-id,x-ms-return-client-request-id,x-ms-correlation-request-id,Accept,Accept-Encoding,Cache-Control,User-Agent',
 };
 
-app.options('/api/fodmap/chat/stream', (request, res) => {
+app.options('/api/fodmap/chat/stream', (request, response) => {
   for (const key of Object.keys(corsHeaders)) {
-    res.header(key, corsHeaders[key]);
+    response.header(key, corsHeaders[key]);
   }
 
-  res.sendStatus(200);
+  response.sendStatus(200);
 });
 
-app.options('/api/fodmap/chat', (request, res) => {
+app.options('/api/fodmap/chat', (request, response) => {
   for (const key of Object.keys(corsHeaders)) {
-    res.header(key, corsHeaders[key]);
+    response.header(key, corsHeaders[key]);
   }
 
-  res.sendStatus(200);
+  response.sendStatus(200);
 });
 
-app.options('/api/chats', (request, res) => {
+app.options('/api/chats', (request, response) => {
   for (const key of Object.keys(corsHeaders)) {
-    res.header(key, corsHeaders[key]);
+    response.header(key, corsHeaders[key]);
   }
 
-  res.sendStatus(200);
+  response.sendStatus(200);
 });
 
 // Log requests
-app.use((request, res, next) => {
+app.use((request, response, next) => {
   console.log(`${new Date().toISOString()} ${request.method} ${request.path}`);
   next();
 });
 
 // FODMAP Chat endpoint (streaming version for AIChatProtocolClient)
-app.post('/api/fodmap/chat/stream', async (request, res) => {
+app.post('/api/fodmap/chat/stream', async (request, response) => {
   try {
     const { messages } = request.body;
     const lastMessage = messages?.[messages.length - 1]?.content || '';
@@ -151,7 +151,7 @@ app.post('/api/fodmap/chat/stream', async (request, res) => {
       }
     }
 
-    let response = '';
+    let aiResponse = '';
 
     if (azureOpenAI) {
       // Use Azure OpenAI for intelligent responses
@@ -161,23 +161,23 @@ app.post('/api/fodmap/chat/stream', async (request, res) => {
           (contextInfo ? `\n\nCurrent food context:\n${contextInfo}` : '') +
           `\n\nUser question: ${lastMessage}`;
 
-        const aiResponse = await azureOpenAI.invoke([
+        const aiResponseResult = await azureOpenAI.invoke([
           { role: 'system', content: fullPrompt },
           { role: 'user', content: lastMessage },
         ]);
 
-        response = aiResponse.content || 'Sorry, I could not generate a response.';
-        console.log(response);
+        aiResponse = aiResponseResult.content || 'Sorry, I could not generate a response.';
+        console.log(aiResponse);
       } catch (aiError) {
         console.error('Azure OpenAI error:', aiError.message);
-        response = generateMockResponse(lastMessage, searchResults);
+        aiResponse = generateMockResponse(lastMessage, searchResults);
       }
     } else {
-      response = generateMockResponse(lastMessage, searchResults);
+      aiResponse = generateMockResponse(lastMessage, searchResults);
     }
 
     // Stream the response in AIChatProtocol format
-    res.writeHead(200, {
+    response.writeHead(200, {
       'Content-Type': 'application/x-ndjson',
       'Transfer-Encoding': 'chunked',
       'Access-Control-Allow-Origin': '*',
@@ -186,8 +186,8 @@ app.post('/api/fodmap/chat/stream', async (request, res) => {
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     });
 
-    const words = response.split(/(\s+)/);
-    for (const word of words) {
+    const words = aiResponse.split(/(\s+)/);
+    const promises = words.map(async (word) => {
       // Always send, even if it's just whitespace
       const delta = {
         delta: {
@@ -200,9 +200,13 @@ app.post('/api/fodmap/chat/stream', async (request, res) => {
         },
       };
 
-      res.write(JSON.stringify(delta) + '\n');
-      await new Promise((resolve) => setTimeout(resolve, 30));
-    }
+      response.write(JSON.stringify(delta) + '\n');
+      await new Promise((resolve) => {
+        setTimeout(resolve, 30);
+      });
+    });
+
+    await Promise.all(promises);
 
     // Send final completion marker
     const finalDelta = {
@@ -214,19 +218,19 @@ app.post('/api/fodmap/chat/stream', async (request, res) => {
         sessionId: 'local-session',
         foodResults: searchResults.length > 0 ? searchResults.slice(0, 3) : undefined,
       },
-      finish_reason: 'stop',
+      finishReason: 'stop',
     };
 
-    res.write(JSON.stringify(finalDelta) + '\n');
-    res.end();
+    response.write(JSON.stringify(finalDelta) + '\n');
+    response.end();
   } catch (error) {
     console.error('Streaming chat error:', error);
-    res.status(500).json({ error: 'Chat service unavailable' });
+    response.status(500).json({ error: 'Chat service unavailable' });
   }
 });
 
 // FODMAP Chat endpoint (non-streaming version)
-app.post('/api/fodmap/chat', async (request, res) => {
+app.post('/api/fodmap/chat', async (request, response) => {
   try {
     const { messages } = request.body;
     const lastMessage = messages?.[messages.length - 1]?.content || '';
@@ -246,7 +250,7 @@ app.post('/api/fodmap/chat', async (request, res) => {
       }
     }
 
-    let response = '';
+    let aiResponse = '';
 
     if (azureOpenAI) {
       // Use Azure OpenAI for intelligent responses
@@ -256,33 +260,33 @@ app.post('/api/fodmap/chat', async (request, res) => {
           (contextInfo ? `\n\nCurrent food context:\n${contextInfo}` : '') +
           `\n\nUser question: ${lastMessage}`;
 
-        const aiResponse = await azureOpenAI.invoke([
+        const aiResponseResult = await azureOpenAI.invoke([
           { role: 'system', content: fullPrompt },
           { role: 'user', content: lastMessage },
         ]);
 
-        response = aiResponse.content || 'Sorry, I could not generate a response.';
+        aiResponse = aiResponseResult.content || 'Sorry, I could not generate a response.';
         console.log('✅ Azure OpenAI response generated');
       } catch (aiError) {
         console.error('❌ Azure OpenAI error:', aiError.message);
         // Fall back to mock response
-        response = generateMockResponse(lastMessage, searchResults);
+        aiResponse = generateMockResponse(lastMessage, searchResults);
       }
     } else {
       // Use mock response
-      response = generateMockResponse(lastMessage, searchResults);
+      aiResponse = generateMockResponse(lastMessage, searchResults);
     }
 
     // Stream the response
-    const chunks = response.split(/(\s+)/);
+    const chunks = aiResponse.split(/(\s+)/);
 
-    res.writeHead(200, {
+    response.writeHead(200, {
       'Content-Type': 'application/x-ndjson',
       'Transfer-Encoding': 'chunked',
       'Access-Control-Allow-Origin': '*',
     });
 
-    for (const chunk of chunks) {
+    const chunkPromises = chunks.map(async (chunk) => {
       if (chunk.trim()) {
         const responseChunk = {
           delta: {
@@ -295,15 +299,19 @@ app.post('/api/fodmap/chat', async (request, res) => {
           },
         };
 
-        res.write(JSON.stringify(responseChunk) + '\n');
-        await new Promise((resolve) => setTimeout(resolve, 30)); // Simulate streaming
+        response.write(JSON.stringify(responseChunk) + '\n');
+        await new Promise((resolve) => {
+          setTimeout(resolve, 30); // Simulate streaming
+        });
       }
-    }
+    });
 
-    res.end();
+    await Promise.all(chunkPromises);
+
+    response.end();
   } catch (error) {
     console.error('Chat error:', error);
-    res.status(500).json({ error: 'Chat service unavailable' });
+    response.status(500).json({ error: 'Chat service unavailable' });
   }
 });
 
@@ -319,15 +327,17 @@ function generateMockResponse(question, searchResults) {
 
   const food = searchResults[0];
   const rating = fodmapService.getFoodRating(food);
-  const emoji = rating.safeForLowFodmap ? '✅' : '⚠️';
+  const emoji = rating.safeForLowFodmap ? '✅' : rating.rating === 'moderate' ? '⚠️' : '❌';
 
-  return `${emoji} ${food.name} is ${food.fodmap.toUpperCase()} FODMAP!
+  return `${emoji} ${food.name} is ${food.rating.toUpperCase()} FODMAP!
 
 ${rating.recommendation}
 
-${food.qty ? `Safe serving size: ${food.qty}` : ''}
+Safe serving size: ${food.safeServing}
 
-This food is in the ${food.category} category.
+💡 Tips: ${food.tips}
+
+${food.alternatives.length > 0 ? `🔄 Alternatives: ${food.alternatives.join(', ')}` : ''}
 
 <<What about other fruits?>>
 <<Can I eat this every day?>>
@@ -335,32 +345,32 @@ This food is in the ${food.category} category.
 }
 
 // FODMAP Search endpoint
-app.get('/api/fodmap/search', (request, res) => {
+app.get('/api/fodmap/search', (request, response) => {
   try {
-    const { q: query, category, id } = request.query;
+    const { q: query, rating, id } = request.query;
 
     if (id) {
       const food = fodmapService.getFoodById(id);
       if (!food) {
-        return res.status(404).json({ error: 'Food not found' });
+        return response.status(404).json({ error: 'Food not found' });
       }
 
       const rating = fodmapService.getFoodRating(food);
-      return res.json({ food, rating });
+      return response.json({ food, rating });
     }
 
-    if (category) {
-      const foods = fodmapService.getFoodsByCategory(category);
+    if (rating && ['low', 'moderate', 'high'].includes(rating)) {
+      const foods = fodmapService.getFoodsByRating(rating);
       const results = foods.map((food) => ({
         food,
         rating: fodmapService.getFoodRating(food),
       }));
-      return res.json({ results, total: results.length });
+      return response.json({ results, total: results.length });
     }
 
     if (query) {
       if (query.length < 2) {
-        return res.status(400).json({ error: 'Query must be at least 2 characters long' });
+        return response.status(400).json({ error: 'Query must be at least 2 characters long' });
       }
 
       const foods = fodmapService.searchFoods(query);
@@ -368,19 +378,23 @@ app.get('/api/fodmap/search', (request, res) => {
         food,
         rating: fodmapService.getFoodRating(food),
       }));
-      return res.json({ results, total: results.length, query });
+      return response.json({ results, total: results.length, query });
     }
 
-    const categories = fodmapService.getAllCategories();
-    res.json({ categories });
+    const foods = fodmapService.getAllFoods();
+    const results = foods.map((food) => ({
+      food,
+      rating: fodmapService.getFoodRating(food),
+    }));
+    response.json({ results, total: results.length });
   } catch (error) {
     console.error('Search error:', error);
-    res.status(500).json({ error: 'Search service unavailable' });
+    response.status(500).json({ error: 'Search service unavailable' });
   }
 });
 
 // Standard AI Chat Protocol endpoint (what AIChatProtocolClient expects)
-app.post('/api/chats', async (request, res) => {
+app.post('/api/chats', async (request, response) => {
   console.log('Standard chat endpoint called, forwarding to FODMAP chat');
 
   // Forward the request to our FODMAP chat handler with the same logic
@@ -403,7 +417,7 @@ app.post('/api/chats', async (request, res) => {
       }
     }
 
-    let response = '';
+    let aiResponse = '';
 
     if (azureOpenAI) {
       // Use Azure OpenAI for intelligent responses
@@ -413,23 +427,23 @@ app.post('/api/chats', async (request, res) => {
           (contextInfo ? `\n\nCurrent food context:\n${contextInfo}` : '') +
           `\n\nUser question: ${lastMessage}`;
 
-        const aiResponse = await azureOpenAI.invoke([
+        const aiResponseResult = await azureOpenAI.invoke([
           { role: 'system', content: fullPrompt },
           { role: 'user', content: lastMessage },
         ]);
 
-        response = aiResponse.content || 'Sorry, I could not generate a response.';
+        aiResponse = aiResponseResult.content || 'Sorry, I could not generate a response.';
         console.log('✅ Azure OpenAI response generated');
       } catch (aiError) {
         console.error('❌ Azure OpenAI error:', aiError.message);
-        response = generateMockResponse(lastMessage, searchResults);
+        aiResponse = generateMockResponse(lastMessage, searchResults);
       }
     } else {
-      response = generateMockResponse(lastMessage, searchResults);
+      aiResponse = generateMockResponse(lastMessage, searchResults);
     }
 
     // Return complete response for standard endpoint (not streaming)
-    res.json({
+    response.json({
       id: 'local-session',
       object: 'chat.completion',
       created: Math.floor(Date.now() / 1000),
@@ -438,26 +452,26 @@ app.post('/api/chats', async (request, res) => {
           index: 0,
           message: {
             role: 'assistant',
-            content: response,
+            content: aiResponse,
           },
-          finish_reason: 'stop',
+          finishReason: 'stop',
         },
       ],
       usage: {
-        prompt_tokens: lastMessage.length,
-        completion_tokens: response.length,
-        total_tokens: lastMessage.length + response.length,
+        promptTokens: lastMessage.length,
+        completionTokens: aiResponse.length,
+        totalTokens: lastMessage.length + aiResponse.length,
       },
     });
   } catch (error) {
     console.error('Chat error:', error);
-    res.status(500).json({ error: 'Chat service unavailable' });
+    response.status(500).json({ error: 'Chat service unavailable' });
   }
 });
 
 // Health check
-app.get('/api/health', (request, res) => {
-  res.json({
+app.get('/api/health', (request, response) => {
+  response.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     foodsLoaded: true,

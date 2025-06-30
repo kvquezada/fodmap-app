@@ -8,28 +8,20 @@ const __dirname = dirname(__filename);
 export interface FodmapFood {
   id: string;
   name: string;
-  fodmap: 'low' | 'high';
-  category: string;
-  qty?: string;
-  details: {
-    oligos: number;
-    fructose: number;
-    polyols: number;
-    lactose: number;
-  };
+  rating: 'low' | 'moderate' | 'high';
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 export interface FodmapRating {
   food: FodmapFood;
-  rating: 'low' | 'high';
+  rating: 'low' | 'moderate' | 'high';
   safeForLowFodmap: boolean;
-  components: {
-    oligosaccharides: 'low' | 'medium' | 'high';
-    disaccharides: 'low' | 'medium' | 'high';
-    monosaccharides: 'low' | 'medium' | 'high';
-    polyols: 'low' | 'medium' | 'high';
-  };
   recommendation: string;
+  safeServing: string;
+  tips: string;
+  alternatives: string[];
 }
 
 class FodmapService {
@@ -41,7 +33,7 @@ class FodmapService {
 
     try {
       // Use relative path from the compiled dist folder
-      const dataPath = join(__dirname, '../../data/fodmap-foods.json');
+      const dataPath = join(__dirname, '../../../data/fodmap-foods.json');
       const data = readFileSync(dataPath, 'utf8');
       this.foods = JSON.parse(data) as FodmapFood[];
       this.initialized = true;
@@ -55,11 +47,7 @@ class FodmapService {
     this.initialize();
 
     const searchTerm = query.toLowerCase().trim();
-    return this.foods
-      .filter(
-        (food) => food.name.toLowerCase().includes(searchTerm) || food.category.toLowerCase().includes(searchTerm),
-      )
-      .slice(0, 10); // Limit to top 10 results
+    return this.foods.filter((food) => food.name.toLowerCase().includes(searchTerm)).slice(0, 10); // Limit to top 10 results
   }
 
   getFoodById(id: string): FodmapFood | undefined {
@@ -68,68 +56,36 @@ class FodmapService {
   }
 
   getFoodRating(food: FodmapFood): FodmapRating {
-    const componentToRating = (value: number): 'low' | 'medium' | 'high' => {
-      switch (value) {
-        case 0: {
-          return 'low';
-        }
-
-        case 1: {
-          return 'medium';
-        }
-
-        case 2: {
-          return 'high';
-        }
-
-        default: {
-          return 'low';
-        }
-      }
-    };
-
-    const components = {
-      oligosaccharides: componentToRating(food.details.oligos),
-      disaccharides: componentToRating(food.details.lactose),
-      monosaccharides: componentToRating(food.details.fructose),
-      polyols: componentToRating(food.details.polyols),
-    };
-
-    const safeForLowFodmap = food.fodmap === 'low';
+    const safeForLowFodmap = food.rating === 'low';
 
     let recommendation = '';
     if (safeForLowFodmap) {
-      recommendation = food.qty
-        ? `✅ Safe to eat${food.qty ? ` in servings of ${food.qty}` : ''}`
-        : '✅ Generally safe for low FODMAP diet';
+      recommendation = `✅ Safe to eat in servings of ${food.safeServing}`;
+    } else if (food.rating === 'moderate') {
+      recommendation = `⚠️ Moderate FODMAP content. ${food.safeServing}`;
     } else {
-      const highComponents = Object.entries(components)
-        .filter(([_, rating]) => rating === 'high' || rating === 'medium')
-        .map(([component, _]) => component);
-
-      recommendation =
-        highComponents.length > 0
-          ? `⚠️ High in ${highComponents.join(', ')}. Avoid or consume very small amounts.`
-          : '⚠️ Not recommended for low FODMAP diet';
+      recommendation = `❌ High FODMAP content. ${food.safeServing}`;
     }
 
     return {
       food,
-      rating: food.fodmap,
+      rating: food.rating,
       safeForLowFodmap,
-      components,
       recommendation,
+      safeServing: food.safeServing,
+      tips: food.tips,
+      alternatives: food.alternatives,
     };
   }
 
-  getAllCategories(): string[] {
+  getFoodsByRating(rating: 'low' | 'moderate' | 'high'): FodmapFood[] {
     this.initialize();
-    return [...new Set(this.foods.map((food) => food.category))].sort();
+    return this.foods.filter((food) => food.rating === rating);
   }
 
-  getFoodsByCategory(category: string): FodmapFood[] {
+  getAllFoods(): FodmapFood[] {
     this.initialize();
-    return this.foods.filter((food) => food.category.toLowerCase() === category.toLowerCase());
+    return this.foods;
   }
 }
 

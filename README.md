@@ -4,6 +4,16 @@
 
 A friendly, AI-powered grocery shopping assistant designed to help people with irritable bowel syndrome (IBS) or anyone following a low FODMAP diet. Imagine having a knowledgeable genie by your side, ready to answer your food questions, provide FODMAP ratings, and offer practical shopping tips so you can shop and eat with confidence.
 
+## ⚠️ Important Usage Notice
+
+**Educational Use Only**: This application is designed for educational purposes only. It is not intended to replace professional medical advice, diagnosis, or treatment.
+
+**Non-Commercial Use**: This application is strictly for non-commercial use. Commercial applications, medical diagnosis, or professional healthcare services are not permitted.
+
+**Data Attribution**: All FODMAP information is properly attributed to its sources.
+
+**Medical Disclaimer**: This is a prototype application. The information provided is for educational purposes only. It is not intended as medical advice, diagnosis, or treatment recommendation. Always consult with a healthcare professional for medical advice.
+
 ## Setup Instructions
 
 ### Backend Setup
@@ -58,3 +68,7 @@ The message will be sent to the backend API, which will process it through the A
 - Can I use almond milk?
 - What should I avoid in the produce section?
 - Are there any low FODMAP fruits I can try?
+
+## Data Attribution
+
+All FODMAP ratings compiled from publicly available nutrition sources; text © you.

@@ -1,0 +1,350 @@
+[
+  {
+    "id": "avocado",
+    "name": "Avocado",
+    "rating": "high",
+    "safeServing": "≤ 30 g (⅛ fruit)",
+    "tips": "Stick to a thin slice on toast.",
+    "alternatives": [
+      "Cucumber slices",
+      "Zucchini ribbons"
+    ]
+  },
+  {
+    "id": "banana-firm",
+    "name": "Banana (firm)",
+    "rating": "low",
+    "safeServing": "≤ 100 g (1 medium)",
+    "tips": "Greener bananas have lower FODMAPs.",
+    "alternatives": []
+  },
+  {
+    "id": "banana-ripe",
+    "name": "Banana (ripe)",
+    "rating": "high",
+    "safeServing": "≤ 45 g (½ medium)",
+    "tips": "Choose firm bananas or limit portion.",
+    "alternatives": [
+      "Kiwi",
+      "Firm banana"
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "rating": "high",
+    "safeServing": "≤ 20 g (⅛ medium)",
+    "tips": "Apples are high in sorbitol—try berries instead.",
+    "alternatives": [
+      "Strawberries",
+      "Blueberries"
+    ]
+  },
+  {
+    "id": "strawberries",
+    "name": "Strawberries",
+    "rating": "low",
+    "safeServing": "≤ 65 g (5 medium)",
+    "tips": "Generally well‑tolerated fresh or frozen.",
+    "alternatives": []
+  },
+  {
+    "id": "blueberries",
+    "name": "Blueberries",
+    "rating": "moderate",
+    "safeServing": "≤ 40 g (¼ cup)",
+    "tips": "Keep servings small to stay low‑FODMAP.",
+    "alternatives": [
+      "Strawberries",
+      "Raspberries"
+    ]
+  },
+  {
+    "id": "grapes",
+    "name": "Grapes",
+    "rating": "low",
+    "safeServing": "≤ 28 g (9 grapes)",
+    "tips": "Seedless grapes are usually safe in small serves.",
+    "alternatives": []
+  },
+  {
+    "id": "watermelon",
+    "name": "Watermelon",
+    "rating": "high",
+    "safeServing": "≤ 30 g (1 small cube)",
+    "tips": "Very high in fructose—best avoided.",
+    "alternatives": [
+      "Rockmelon",
+      "Papaya"
+    ]
+  },
+  {
+    "id": "onion",
+    "name": "Onion",
+    "rating": "high",
+    "safeServing": "≤ 12 g (1 tbsp diced)",
+    "tips": "Use green onion tops or onion‑infused oil.",
+    "alternatives": [
+      "Green onion tops",
+      "Chives"
+    ]
+  },
+  {
+    "id": "garlic",
+    "name": "Garlic",
+    "rating": "high",
+    "safeServing": "≤ 3 g (1 clove)",
+    "tips": "Swap for garlic‑infused oil to capture flavour.",
+    "alternatives": [
+      "Garlic‑infused oil",
+      "Chives"
+    ]
+  },
+  {
+    "id": "broccoli-heads",
+    "name": "Broccoli heads",
+    "rating": "low",
+    "safeServing": "≤ 75 g (½ cup)",
+    "tips": "Stick to florets; stalks contain more FODMAPs.",
+    "alternatives": []
+  },
+  {
+    "id": "broccoli-stalks",
+    "name": "Broccoli stalks",
+    "rating": "moderate",
+    "safeServing": "≤ 45 g (⅓ cup)",
+    "tips": "Trim stalk portions for tolerance.",
+    "alternatives": [
+      "Broccoli florets",
+      "Zucchini"
+    ]
+  },
+  {
+    "id": "carrot",
+    "name": "Carrot",
+    "rating": "low",
+    "safeServing": "≤ 75 g (1 medium)",
+    "tips": "Raw or cooked carrots are low‑FODMAP.",
+    "alternatives": []
+  },
+  {
+    "id": "cauliflower",
+    "name": "Cauliflower",
+    "rating": "moderate",
+    "safeServing": "≤ 50 g (½ cup)",
+    "tips": "Large servings may trigger symptoms.",
+    "alternatives": [
+      "Broccoli florets",
+      "Kohlrabi"
+    ]
+  },
+  {
+    "id": "mushrooms-button",
+    "name": "Mushrooms (button)",
+    "rating": "high",
+    "safeServing": "≤ 35 g (½ cup)",
+    "tips": "Opt for oyster or canned champignons.",
+    "alternatives": [
+      "Oyster mushrooms",
+      "Canned champignons"
+    ]
+  },
+  {
+    "id": "chickpeas-canned-drained",
+    "name": "Chickpeas (canned, drained)",
+    "rating": "moderate",
+    "safeServing": "≤ 42 g (¼ cup)",
+    "tips": "Rinse well to lower FODMAP content.",
+    "alternatives": [
+      "Canned lentils",
+      "Firm tofu"
+    ]
+  },
+  {
+    "id": "lentils-canned-drained",
+    "name": "Lentils (canned, drained)",
+    "rating": "low",
+    "safeServing": "≤ 46 g (¼ cup)",
+    "tips": "Canned lentils are safer than dried.",
+    "alternatives": []
+  },
+  {
+    "id": "cashews",
+    "name": "Cashews",
+    "rating": "high",
+    "safeServing": "≤ 15 g (10 nuts)",
+    "tips": "Switch to macadamias or peanuts.",
+    "alternatives": [
+      "Macadamia nuts",
+      "Peanuts"
+    ]
+  },
+  {
+    "id": "almonds",
+    "name": "Almonds",
+    "rating": "moderate",
+    "safeServing": "≤ 12 g (10 nuts)",
+    "tips": "Stick to small handfuls.",
+    "alternatives": [
+      "Macadamia nuts",
+      "Pecans"
+    ]
+  },
+  {
+    "id": "peanut-butter-smooth",
+    "name": "Peanut butter (smooth)",
+    "rating": "low",
+    "safeServing": "≤ 50 g (2 tbsp)",
+    "tips": "Choose unsweetened varieties.",
+    "alternatives": []
+  },
+  {
+    "id": "milk-cow-full-fat",
+    "name": "Milk (cow, full-fat)",
+    "rating": "high",
+    "safeServing": "≤ 60 ml (¼ cup)",
+    "tips": "Use lactose‑free milk instead.",
+    "alternatives": [
+      "Lactose‑free milk",
+      "Almond milk"
+    ]
+  },
+  {
+    "id": "milk-lactosefree",
+    "name": "Milk (lactose‑free)",
+    "rating": "low",
+    "safeServing": "≤ 250 ml (1 cup)",
+    "tips": "Most people tolerate lactose‑free well.",
+    "alternatives": []
+  },
+  {
+    "id": "cheese-cheddar",
+    "name": "Cheese (cheddar)",
+    "rating": "low",
+    "safeServing": "≤ 40 g (2 slices)",
+    "tips": "Aged, hard cheeses are typically low‑lactose.",
+    "alternatives": []
+  },
+  {
+    "id": "yogurt-greek",
+    "name": "Yogurt (Greek)",
+    "rating": "moderate",
+    "safeServing": "≤ 54 g (¼ cup)",
+    "tips": "Opt for lactose‑free Greek yogurt.",
+    "alternatives": [
+      "Lactose‑free yogurt",
+      "Coconut yogurt"
+    ]
+  },
+  {
+    "id": "bread-sourdough-spelt",
+    "name": "Bread (sourdough spelt)",
+    "rating": "low",
+    "safeServing": "1 slice (35 g)",
+    "tips": "Traditional sourdough fermentation lowers FODMAPs.",
+    "alternatives": []
+  },
+  {
+    "id": "bread-wheat-white",
+    "name": "Bread (wheat, white)",
+    "rating": "high",
+    "safeServing": "≤ 24 g (½ slice)",
+    "tips": "Choose sourdough or gluten‑free bread.",
+    "alternatives": [
+      "Sourdough spelt bread",
+      "Gluten‑free bread"
+    ]
+  },
+  {
+    "id": "pasta-glutenfree",
+    "name": "Pasta (gluten‑free)",
+    "rating": "low",
+    "safeServing": "1 cup cooked (145 g)",
+    "tips": "Check labels for onion/garlic additives.",
+    "alternatives": []
+  },
+  {
+    "id": "pasta-wheat",
+    "name": "Pasta (wheat)",
+    "rating": "high",
+    "safeServing": "≤ 74 g cooked (½ cup)",
+    "tips": "Replace with gluten‑free corn or rice pasta.",
+    "alternatives": [
+      "Gluten‑free pasta",
+      "Rice noodles"
+    ]
+  },
+  {
+    "id": "honey",
+    "name": "Honey",
+    "rating": "high",
+    "safeServing": "≤ 7 g (1 tsp)",
+    "tips": "Swap for maple syrup.",
+    "alternatives": [
+      "Maple syrup",
+      "Golden syrup"
+    ]
+  },
+  {
+    "id": "maple-syrup-pure",
+    "name": "Maple syrup (pure)",
+    "rating": "low",
+    "safeServing": "≤ 50 g (2 tbsp)",
+    "tips": "Pure maple is low in FODMAPs.",
+    "alternatives": []
+  },
+  {
+    "id": "quinoa-cooked",
+    "name": "Quinoa (cooked)",
+    "rating": "low",
+    "safeServing": "1 cup (155 g)",
+    "tips": "Versatile low‑FODMAP grain alternative.",
+    "alternatives": []
+  },
+  {
+    "id": "rice-white-cooked",
+    "name": "Rice (white, cooked)",
+    "rating": "low",
+    "safeServing": "1 cup (190 g)",
+    "tips": "Plain white rice is safe.",
+    "alternatives": []
+  },
+  {
+    "id": "ice-cream-regular-dairy",
+    "name": "Ice cream (regular dairy)",
+    "rating": "high",
+    "safeServing": "≤ 60 g (½ scoop)",
+    "tips": "Choose lactose‑free ice cream.",
+    "alternatives": [
+      "Lactose‑free ice cream",
+      "Sorbet"
+    ]
+  },
+  {
+    "id": "ice-cream-lactosefree",
+    "name": "Ice cream (lactose‑free)",
+    "rating": "low",
+    "safeServing": "1 scoop (80 g)",
+    "tips": "Most lactose‑free ice creams are low‑FODMAP.",
+    "alternatives": []
+  },
+  {
+    "id": "agave-syrup",
+    "name": "Agave syrup",
+    "rating": "high",
+    "safeServing": "≤ 5 g (1 tsp)",
+    "tips": "Use maple syrup instead.",
+    "alternatives": [
+      "Maple syrup",
+      "Rice malt syrup"
+    ]
+  },
+  {
+    "id": "green-beans",
+    "name": "Green beans",
+    "rating": "low",
+    "safeServing": "≤ 75 g (15 beans)",
+    "tips": "Great low‑FODMAP vegetable side.",
+    "alternatives": []
+  }
+]

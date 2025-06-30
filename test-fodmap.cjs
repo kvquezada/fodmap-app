@@ -23,21 +23,14 @@ try {
     console.log('\nTry searching for: banana, apple, bread, rice, milk');
   } else {
     for (const food of results) {
-      const rating = food.fodmap === 'low' ? '✅ LOW FODMAP' : '⚠️ HIGH FODMAP';
+      const rating =
+        food.rating === 'low' ? '✅ LOW FODMAP' : food.rating === 'moderate' ? '⚠️ MODERATE FODMAP' : '❌ HIGH FODMAP';
       console.log(`\n${rating}`);
       console.log(`Food: ${food.name}`);
-      console.log(`Category: ${food.category}`);
-      if (food.qty) console.log(`Safe serving: ${food.qty}`);
-
-      // Show FODMAP components
-      const components = food.details;
-      if (components) {
-        console.log('Components:', {
-          oligosaccharides: ['low', 'medium', 'high'][components.oligos] || 'unknown',
-          disaccharides: ['low', 'medium', 'high'][components.lactose] || 'unknown',
-          monosaccharides: ['low', 'medium', 'high'][components.fructose] || 'unknown',
-          polyols: ['low', 'medium', 'high'][components.polyols] || 'unknown',
-        });
+      console.log(`Safe serving: ${food.safeServing}`);
+      console.log(`Tips: ${food.tips}`);
+      if (food.alternatives.length > 0) {
+        console.log(`Alternatives: ${food.alternatives.join(', ')}`);
       }
     }
   }

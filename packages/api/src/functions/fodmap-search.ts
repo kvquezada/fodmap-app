@@ -6,10 +6,10 @@ export async function searchFoods(request: HttpRequest, context: InvocationConte
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get('q');
-    const category = url.searchParams.get('category');
+    const rating = url.searchParams.get('rating');
     const id = url.searchParams.get('id');
 
-    context.log(`FODMAP Search - query: ${query}, category: ${category}, id: ${id}`);
+    context.log(`FODMAP Search - query: ${query}, rating: ${rating}, id: ${id}`);
 
     // Get food by ID
     if (id) {
@@ -22,9 +22,9 @@ export async function searchFoods(request: HttpRequest, context: InvocationConte
       return ok({ food, rating });
     }
 
-    // Search by category
-    if (category) {
-      const foods = fodmapService.getFoodsByCategory(category);
+    // Search by rating
+    if (rating && ['low', 'moderate', 'high'].includes(rating)) {
+      const foods = fodmapService.getFoodsByRating(rating as 'low' | 'moderate' | 'high');
       const results = foods.map((food) => ({
         food,
         rating: fodmapService.getFoodRating(food),
@@ -46,9 +46,13 @@ export async function searchFoods(request: HttpRequest, context: InvocationConte
       return ok({ results, total: results.length, query });
     }
 
-    // Get all categories
-    const categories = fodmapService.getAllCategories();
-    return ok({ categories });
+    // Get all foods
+    const foods = fodmapService.getAllFoods();
+    const results = foods.map((food) => ({
+      food,
+      rating: fodmapService.getFoodRating(food),
+    }));
+    return ok({ results, total: results.length });
   } catch (_error: unknown) {
     const error = _error as Error;
     context.error(`Error in FODMAP search: ${error.message}`);

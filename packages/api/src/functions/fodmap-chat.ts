@@ -100,8 +100,13 @@ export async function fodmapChat(request: HttpRequest, context: InvocationContex
       contextInfo = 'FODMAP FOOD INFORMATION:\n';
       for (const food of searchResults) {
         const rating = fodmapService.getFoodRating(food);
-        contextInfo += `${food.name}: ${rating.rating.toUpperCase()} FODMAP (${food.category})${food.qty ? ` - Safe serving: ${food.qty}` : ''}\n`;
-        contextInfo += `Recommendation: ${rating.recommendation}\n`;
+        contextInfo += `${food.name}: ${rating.rating.toUpperCase()} FODMAP - Safe serving: ${food.safeServing}\n`;
+        contextInfo += `Tips: ${food.tips}\n`;
+        if (food.alternatives.length > 0) {
+          contextInfo += `Alternatives: ${food.alternatives.join(', ')}\n`;
+        }
+
+        contextInfo += `Recommendation: ${rating.recommendation}\n\n`;
       }
     }
 
@@ -190,9 +195,10 @@ async function* createJsonStream(chunks: AsyncIterable<string>, sessionId: strin
             ? foodResults.map((food) => ({
                 id: food.id,
                 name: food.name,
-                rating: food.fodmap,
-                category: food.category,
-                qty: food.qty,
+                rating: food.rating,
+                safeServing: food.safeServing,
+                tips: food.tips,
+                alternatives: food.alternatives,
               }))
             : undefined,
       },
@@ -301,8 +307,13 @@ export async function fodmapChatStream(request: HttpRequest, context: Invocation
       contextInfo = 'FODMAP FOOD INFORMATION:\n';
       for (const food of searchResults) {
         const rating = fodmapService.getFoodRating(food);
-        contextInfo += `${food.name}: ${rating.rating.toUpperCase()} FODMAP (${food.category})${food.qty ? ` - Safe serving: ${food.qty}` : ''}\n`;
-        contextInfo += `Recommendation: ${rating.recommendation}\n`;
+        contextInfo += `${food.name}: ${rating.rating.toUpperCase()} FODMAP - Safe serving: ${food.safeServing}\n`;
+        contextInfo += `Tips: ${food.tips}\n`;
+        if (food.alternatives.length > 0) {
+          contextInfo += `Alternatives: ${food.alternatives.join(', ')}\n`;
+        }
+
+        contextInfo += `Recommendation: ${rating.recommendation}\n\n`;
       }
     }
 
@@ -347,9 +358,10 @@ export async function fodmapChatStream(request: HttpRequest, context: Invocation
                 ? searchResults.map((food) => ({
                     id: food.id,
                     name: food.name,
-                    rating: food.fodmap,
-                    category: food.category,
-                    qty: food.qty,
+                    rating: food.rating,
+                    safeServing: food.safeServing,
+                    tips: food.tips,
+                    alternatives: food.alternatives,
                   }))
                 : undefined,
           },
@@ -371,9 +383,10 @@ export async function fodmapChatStream(request: HttpRequest, context: Invocation
               ? searchResults.map((food) => ({
                   id: food.id,
                   name: food.name,
-                  rating: food.fodmap,
-                  category: food.category,
-                  qty: food.qty,
+                  rating: food.rating,
+                  safeServing: food.safeServing,
+                  tips: food.tips,
+                  alternatives: food.alternatives,
                 }))
               : undefined,
         },
